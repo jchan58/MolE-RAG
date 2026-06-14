@@ -8,10 +8,6 @@
   </a>
 </p>
 
-**Joey Chan, Wonbin Kweon, Ashley Shin, Niharika Bhattacharjee, Patrick Jiang, Yue Guo, Jiawei Han**
-
-University of Illinois Urbana-Champaign &amp; University of California, San Diego
-
 </div>
 
 ## What is MolE-RAG?
