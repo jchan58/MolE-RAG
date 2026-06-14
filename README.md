@@ -146,23 +146,21 @@ pip install -r requirements.txt
 
    ```bash
    # Step 2: Download the ChemRAG corpus from Hugging Face
-   # The corpus is distributed as 6 JSONL chunks; merge them into one file.
+   # The corpus is distributed as 6 JSONL chunks (~104GB total).
    mkdir -p external/ChemRAG/corpus
    huggingface-cli download ChemRAG/ChemRAG-Corpus --repo-type dataset \
        --local-dir external/ChemRAG/corpus
-   cat external/ChemRAG/corpus/chunks/chunk_*.jsonl \
-       > external/ChemRAG/corpus/chemrag_full_corpus.jsonl
    ```
 
    The corpus aggregates text from PubChem, PubMed, USPTO, Semantic Scholar, Wikipedia, and OpenStax. See [ChemRAG/ChemRAG-Corpus](https://huggingface.co/datasets/ChemRAG/ChemRAG-Corpus).
 
    ```bash
-   # Step 3: Build the Pyserini BM25 index
+   # Step 3: Build the Pyserini BM25 index over the chunks directory
    # Make sure JAVA_HOME points to Java 21 (see Step 1).
    # This creates external/ChemRAG/index/bm25/ which chemrag_retrieval.py expects.
    python -m pyserini.index.lucene \
        --collection JsonCollection \
-       --input external/ChemRAG/corpus \
+       --input external/ChemRAG/corpus/chunks \
        --index external/ChemRAG/index/bm25 \
        --generator DefaultLuceneDocumentGenerator \
        --threads 8 \
