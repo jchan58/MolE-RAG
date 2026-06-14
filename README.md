@@ -32,7 +32,7 @@ MolE-RAG is a training-free framework for LLM-based molecular property predictio
 ```
 MolE-RAG/
 ├── src/                          # Core framework code
-│   ├── mcrag_full.py             # Full MolE-RAG pipeline (text + structure + context)
+│   ├── molerag.py             # Full MolE-RAG pipeline (text + structure + context)
 │   ├── chemrag_retrieval.py      # Text retrieval with BM25 over ChemRAG corpus
 │   ├── prompt_blocks.py          # Molecular context injection (synonyms, FGs, descriptors)
 │   ├── mol_context_only.py           # Molecular context injection without retrieval
@@ -103,7 +103,7 @@ pip install -r requirements.txt
 
 2. **Text Retrieval Setup** (BM25 over the ChemRAG corpus):
 
-   **For reproducing paper results**: BM25 retrieval results are **pre-cached** in `results/<task>/retrieval_cache/` for all tasks and seeds. `mcrag_full.py` loads these automatically — no corpus setup needed.
+   **For reproducing paper results**: BM25 retrieval results are **pre-cached** in `results/<task>/retrieval_cache/` for all tasks and seeds. `molerag.py` loads these automatically — no corpus setup needed.
 
    **To run fresh text retrieval** (e.g., on new molecules or splits), follow these steps:
 
@@ -147,7 +147,7 @@ pip install -r requirements.txt
 
    **To skip text retrieval entirely** (structure retrieval + molecular context only):
    ```bash
-   python src/mcrag_full.py --dataset bbbp --seed 0 --no_text_retrieval
+   python src/molerag.py --dataset bbbp --seed 0 --no_text_retrieval
    ```
 
 ## Running Experiments
@@ -155,7 +155,7 @@ pip install -r requirements.txt
 ### Full MolE-RAG Pipeline
 
 ```bash
-python src/mcrag_full.py --dataset bbbp --models gpt-4o-mini --seed 0
+python src/molerag.py --dataset bbbp --models gpt-4o-mini --seed 0
 ```
 
 Options:
@@ -168,16 +168,16 @@ Options:
 
 ```bash
 # Structure retrieval only (no text, no molecular context)
-python src/mcrag_full.py --dataset bbbp --seed 0 --no_text_retrieval --no_synonyms --no_fgs --no_rdkit
+python src/molerag.py --dataset bbbp --seed 0 --no_text_retrieval --no_synonyms --no_fgs --no_rdkit
 
 # Text retrieval only (no structure, no molecular context)
-python src/mcrag_full.py --dataset bbbp --seed 0 --no_structure_retrieval --no_synonyms --no_fgs --no_rdkit
+python src/molerag.py --dataset bbbp --seed 0 --no_structure_retrieval --no_synonyms --no_fgs --no_rdkit
 
 # Molecular context only (no text, no structure)
-python src/mcrag_full.py --dataset bbbp --seed 0 --no_text_retrieval --no_structure_retrieval
+python src/molerag.py --dataset bbbp --seed 0 --no_text_retrieval --no_structure_retrieval
 
 # Random few-shot (instead of fingerprint-based structural retrieval)
-python src/mcrag_full.py --dataset bbbp --seed 0 --fewshot_pool random
+python src/molerag.py --dataset bbbp --seed 0 --fewshot_pool random
 ```
 
 ### SMILES-Only Baseline
@@ -206,7 +206,7 @@ python scripts/data_preparation/rebuild_fewshot_pools.py
 
 Add your dataset to **three files** before running anything:
 
-**`src/chemrag_retrieval.py`** — `DATASET_CONFIG` dict (used by retrieval and `mcrag_full.py`):
+**`src/chemrag_retrieval.py`** — `DATASET_CONFIG` dict (used by retrieval and `molerag.py`):
 ```python
 DATASET_CONFIG = {
     ...
@@ -284,7 +284,7 @@ python src/chemrag_retrieval.py --dataset your_dataset --retriever bm25 --use_hy
 ### 6. Run the Full Pipeline
 
 ```bash
-python src/mcrag_full.py --dataset your_dataset --seed 0 --models gpt-4o-mini
+python src/molerag.py --dataset your_dataset --seed 0 --models gpt-4o-mini
 ```
 
 ## Models Evaluated
@@ -299,10 +299,10 @@ Open-source models are downloaded from Hugging Face Hub and run locally via `tra
 
 ```bash
 # Run locally on GPU — no API key needed
-python src/mcrag_full.py --dataset bbbp --seed 0 --models meta-llama/Llama-3.2-3B-Instruct
+python src/molerag.py --dataset bbbp --seed 0 --models meta-llama/Llama-3.2-3B-Instruct
 
 # Multiple models in one run
-python src/mcrag_full.py --dataset bbbp --seed 0 --models meta-llama/Llama-3.2-3B-Instruct mistralai/Mistral-7B-Instruct-v0.3
+python src/molerag.py --dataset bbbp --seed 0 --models meta-llama/Llama-3.2-3B-Instruct mistralai/Mistral-7B-Instruct-v0.3
 ```
 
 ## Quick Start
@@ -320,9 +320,9 @@ pip install -r requirements.txt
 echo "OPENAI_API_KEY=sk-..." > .env
 
 # 3. Run MolE-RAG on BBBP with GPT-4o-mini (all 3 seeds)
-python src/mcrag_full.py --dataset bbbp --models gpt-4o-mini --seed 0
-python src/mcrag_full.py --dataset bbbp --models gpt-4o-mini --seed 1
-python src/mcrag_full.py --dataset bbbp --models gpt-4o-mini --seed 2
+python src/molerag.py --dataset bbbp --models gpt-4o-mini --seed 0
+python src/molerag.py --dataset bbbp --models gpt-4o-mini --seed 1
+python src/molerag.py --dataset bbbp --models gpt-4o-mini --seed 2
 
 # 4. Evaluate
 python src/evaluate.py --tasks bbbp --seeds 0 1 2
@@ -330,7 +330,7 @@ python src/evaluate.py --tasks bbbp --seeds 0 1 2
 
 For open-source models (no API key needed, requires GPU):
 ```bash
-python src/mcrag_full.py --dataset bbbp --seed 0 --models Qwen/Qwen3-4B-Instruct-2507
+python src/molerag.py --dataset bbbp --seed 0 --models Qwen/Qwen3-4B-Instruct-2507
 ```
 
 ## Data

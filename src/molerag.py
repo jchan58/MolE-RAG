@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-mcrag_full.py — the full MCRAG pipeline (with --seed + --fewshot_pool support).
+molerag.py — the full MCRAG pipeline (with --seed + --fewshot_pool support).
 
 Combines all three pillars into a single inference run:
   1. Text retrieval     — hybrid BM25 (LLM task keywords + LLM-filtered synonyms)
@@ -12,7 +12,7 @@ Retrieval caching saves BM25 results to disk after first run (per-seed).
 
 Seed handling:
   --seed N   read test/fewshot from data/moleculenet_property_scaffold/seed_{N}/{dataset}/
-             write outputs to mcrag_full_results/seed_{N}/ and baseline_results/seed_{N}/
+             write outputs to molerag_results/seed_{N}/ and baseline_results/seed_{N}/
              retrieval cache filename includes _seed{N} suffix
              (text retrieval still hits the same corpus, but cache is keyed by row index
               and row indices differ across seeds, so per-seed cache files are required)
@@ -23,9 +23,9 @@ Fewshot pool handling:
   --fewshot_pool random      — use fewshot_random_top5.csv (random training examples)
 
 CLI:
-  python mcrag_full.py --dataset bbbp --models gpt-4o-mini --seed 0
-  python mcrag_full.py --dataset bbbp --models gpt-4o-mini --seed 0 --fewshot_pool random
-  python mcrag_full.py --dataset bbbp --no_baseline   # skip auto-baseline check
+  python molerag.py --dataset bbbp --models gpt-4o-mini --seed 0
+  python molerag.py --dataset bbbp --models gpt-4o-mini --seed 0 --fewshot_pool random
+  python molerag.py --dataset bbbp --no_baseline   # skip auto-baseline check
 """
 
 from __future__ import annotations
@@ -568,7 +568,7 @@ def main():
                         / f"seed_{args.seed}" / dataset_name)
         test_path    = scaffold_dir / f"{dataset_name}_test.csv"
         fewshot_path = scaffold_dir / fewshot_csv_name
-        output_dir   = base_dir / "mcrag_full_results" / f"seed_{args.seed}"
+        output_dir   = base_dir / "molerag_results" / f"seed_{args.seed}"
         baseline_dir = base_dir / BASELINE_DIR_NAME / f"seed_{args.seed}"
         print(f"[SEED MODE] Using scaffold split seed_{args.seed}")
         print(f"  test:    {test_path}")
@@ -576,7 +576,7 @@ def main():
     else:
         test_path    = base_dir / f"{dataset_name}_test.csv"
         fewshot_path = base_dir / fewshot_csv_name
-        output_dir   = base_dir / "mcrag_full_results"
+        output_dir   = base_dir / "molerag_results"
         baseline_dir = base_dir / BASELINE_DIR_NAME
 
     output_dir.mkdir(parents=True, exist_ok=True)

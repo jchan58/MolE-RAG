@@ -68,7 +68,7 @@ load_dotenv(str(ENV_PATH))
 
 
 # =========================
-# Per-dataset config (matches chemrag_retrieval.py / mcrag_full.py)
+# Per-dataset config (matches chemrag_retrieval.py / molerag.py)
 # =========================
 DATASET_CONFIG = {
     "bbbp":     {"task_type": "classification", "multitask": False},

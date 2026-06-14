@@ -9,7 +9,7 @@ Reads JSONL outputs from:
   - <task>/hybrid_results/seed_<N>/                (query: LLM keywords + syns)
   - <task>/raw_synonym_results/seed_<N>/           (query: raw PubChem syns)
   - <task>/<mol_context_results/*>/seed_<N>/      (no retrieval, injection-only)
-  - <task>/mcrag_full_results/seed_<N>/            (struct fewshot, random fewshot, full MCRAG)
+  - <task>/molerag_results/seed_<N>/            (struct fewshot, random fewshot, full MCRAG)
 
 For each (model, dataset, condition), aggregates across seeds: reports mean ± std.
 
@@ -80,7 +80,7 @@ RETRIEVAL_MODES = {
 
 # Legacy structure-modes folders (pre-mcrag_full). Kept for backwards compat;
 # if files exist here they'll still be read. With the new pipeline, struct
-# fewshot lands in mcrag_full_results/ under "mcrag_struct..." filenames.
+# fewshot lands in molerag_results/ under "mcrag_struct..." filenames.
 STRUCTURE_MODES = {
     "smiles":         ("baseline_results",                      "smiles"),
     "best_fp_legacy": ("structural_fewshot_results",      "best_fp_legacy"),
@@ -99,7 +99,7 @@ PI_MODES = {
     "pi_syn_fg_rdk": ("mol_context_results/syn_fg_rdk",   "pi_all"),
 }
 
-MCRAG_DIR = "mcrag_full_results"
+MCRAG_DIR = "molerag_results"
 
 # Labels for filenames matching: <model>_<ds>_mcrag_<suffix>(_random)?_<retr>_k<k>.jsonl
 # The suffix captures which pillars are ON (text, struct, syn, fg, rdk).
@@ -533,7 +533,7 @@ def discover_files(tasks: List[str],
 
 
 def _label_from_mcrag_filename(name: str) -> str:
-    """Compute mode label from an mcrag_full_results filename.
+    """Compute mode label from an molerag_results filename.
 
     Examples:
       gpt_4o_mini_bbbp_mcrag_struct_bm25_k5.jsonl
