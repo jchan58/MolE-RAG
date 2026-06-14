@@ -21,7 +21,7 @@ MolE-RAG is a training-free framework for LLM-based molecular property predictio
 - **No training required**: Inference-time augmentation only — works with any LLM out of the box
 - **Three context sources**: Text retrieval from chemistry literature, molecule-specific context (synonyms, functional groups, RDKit descriptors), and structural retrieval via task-adaptive fingerprints
 - **Strong performance**: Improves ROC-AUC by up to 28 points on classification tasks and reduces regression RMSE by up to 67% over SMILES-only baselines across general-purpose LLMs
-- **Broad model coverage**: Evaluated on Llama, Mistral, Qwen3, ChemDFM, GPT-4o-mini, and GPT-5.4-nano across 8 MoleculeNet benchmarks
+- **Broad model coverage**: Evaluated on Llama, Mistral, Qwen3, ChemDFM, GPT-4o-mini, and GPT-5.4-nano across 9 MoleculeNet benchmarks
 
 ## Repository Structure
 
@@ -190,7 +190,7 @@ python src/molerag.py --dataset bbbp --models gpt-4o-mini --seed 0
 ```
 
 Options:
-- `--dataset`: One of `bbbp`, `bace`, `clintox`, `tox21`, `sider`, `esol`, `freesolv`, `lipo`
+- `--dataset`: One of `bbbp`, `bace`, `clintox`, `hiv`, `tox21`, `sider`, `esol`, `freesolv`, `lipo`
 - `--models`: Model names (space-separated for multiple)
 - `--seed`: Random seed for scaffold split (0, 1, or 2)
 - `--fewshot_pool`: `structural` (default) or `random`
@@ -338,13 +338,14 @@ python src/molerag.py --dataset bbbp --seed 0 --models meta-llama/Llama-3.2-3B-I
 
 ## Data
 
-We evaluate on 8 [MoleculeNet](https://moleculenet.org/) benchmarks covering drug discovery-relevant molecular properties. All datasets use scaffold splitting (80/10/10 train/valid/test) across 3 random seeds. Pre-computed splits are included in `data/moleculenet_property_scaffold/`.
+We evaluate on 9 [MoleculeNet](https://moleculenet.org/) benchmarks covering drug discovery-relevant molecular properties. All datasets use scaffold splitting (80/10/10 train/valid/test) across 3 random seeds. Pre-computed splits are included in `data/moleculenet_property_scaffold/`.
 
 ### Classification (ROC-AUC ↑)
 
 | Dataset | Molecules | Task | Property |
 |---------|-----------|------|----------|
 | BBBP | 2,039 | Binary | Blood-brain barrier permeability |
+| HIV | 41,127 | Binary | HIV replication inhibition |
 | BACE | 1,513 | Binary | BACE-1 inhibition (beta-secretase, Alzheimer's target) |
 | ClinTox | 1,478 | Binary (2 tasks) | Clinical trial toxicity and FDA approval status |
 | Tox21 | 7,831 | Binary (12 tasks) | Toxicity across 12 biochemical assays |
