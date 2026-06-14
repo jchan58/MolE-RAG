@@ -134,6 +134,12 @@ pip install -r requirements.txt
 
    ```bash
    # Step 1: Install retrieval dependencies
+   # Pyserini requires Java 21. If not available on your system:
+   pip install install-jdk
+   python -c "import jdk; jdk.install('21', path='~/java21')"
+   export JAVA_HOME=~/java21/jdk-21.0.11+10   # adjust path to match installed version
+   export JVM_PATH=$JAVA_HOME/lib/server/libjvm.so
+
    pip install pyserini
    pip install git+https://github.com/RUC-NLPIR/FlashRAG.git --no-deps
    ```
@@ -152,6 +158,7 @@ pip install -r requirements.txt
 
    ```bash
    # Step 3: Build the Pyserini BM25 index
+   # Make sure JAVA_HOME points to Java 21 (see Step 1).
    # This creates external/ChemRAG/index/bm25/ which chemrag_retrieval.py expects.
    python -m pyserini.index.lucene \
        --collection JsonCollection \
