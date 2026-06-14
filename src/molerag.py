@@ -16,7 +16,7 @@ Seed handling:
              retrieval cache filename includes _seed{N} suffix
              (text retrieval still hits the same corpus, but cache is keyed by row index
               and row indices differ across seeds, so per-seed cache files are required)
-  no --seed  use old random-split paths (backward-compatible)
+  no --seed  use legacy random-split paths
 
 Fewshot pool handling:
   --fewshot_pool structural  (default) — use fewshot_global_structural_top5.csv (best-FP neighbors)
@@ -516,7 +516,7 @@ def main():
                     help="If set, read test/fewshot from "
                          "data/moleculenet_property_scaffold/seed_{N}/{dataset}/ "
                          "and write outputs to seed-specific subfolders. "
-                         "Default: use old random-split paths (backward-compatible).")
+                         "Default: use legacy random-split paths.")
 
     # Which fewshot pool CSV to use (only affects structural block)
     ap.add_argument("--fewshot_pool", choices=["structural", "random"],

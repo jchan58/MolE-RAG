@@ -199,7 +199,7 @@ def main():
     print(f"Estimated time: {len(missing) * 0.5 / args.workers / 60:.1f} min")
 
     session = requests.Session()
-    session.headers.update({"User-Agent": "MCRAG-research/1.0"})
+    session.headers.update({"User-Agent": "MolE-RAG/1.0"})
 
     save_lock = Lock()
     t0 = time.time()

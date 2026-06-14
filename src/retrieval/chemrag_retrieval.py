@@ -1229,7 +1229,7 @@ def main():
                     help="If set, read test from "
                          "data/moleculenet_property_scaffold/seed_{N}/{dataset}/ "
                          "and write outputs/cache with seed-specific names. "
-                         "Default: use old random-split paths.")
+                         "Default: use legacy random-split paths.")
 
     args = ap.parse_args()
 

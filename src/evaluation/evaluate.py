@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-evaluate.py — MCRAG-specific evaluation, seed-aware, with cross-seed aggregation.
+evaluate.py — MolE-RAG evaluation, seed-aware, with cross-seed aggregation.
 
 Reads JSONL outputs from:
   - <task>/baseline_results/seed_<N>/    (smiles baseline)
@@ -9,7 +9,7 @@ Reads JSONL outputs from:
   - <task>/hybrid_results/seed_<N>/                (query: LLM keywords + syns)
   - <task>/raw_synonym_results/seed_<N>/           (query: raw PubChem syns)
   - <task>/<mol_context_results/*>/seed_<N>/      (no retrieval, injection-only)
-  - <task>/molerag_results/seed_<N>/            (struct fewshot, random fewshot, full MCRAG)
+  - <task>/molerag_results/seed_<N>/            (struct fewshot, random fewshot, full MolE-RAG)
 
 For each (model, dataset, condition), aggregates across seeds: reports mean ± std.
 
@@ -78,7 +78,7 @@ RETRIEVAL_MODES = {
     "raw_synonyms": ("raw_synonym_results",   "raw_syn"),
 }
 
-# Legacy structure-modes folders (pre-mcrag_full). Kept for backwards compat;
+# Legacy structure-modes folders (pre-MolE-RAG). Kept for backwards compat;
 # if files exist here they'll still be read. With the new pipeline, struct
 # fewshot lands in molerag_results/ under "mcrag_struct..." filenames.
 STRUCTURE_MODES = {
@@ -99,18 +99,18 @@ PI_MODES = {
     "pi_syn_fg_rdk": ("mol_context_results/syn_fg_rdk",   "pi_all"),
 }
 
-MCRAG_DIR = "molerag_results"
+MOLERAG_DIR = "molerag_results"
 
 # Labels for filenames matching: <model>_<ds>_mcrag_<suffix>(_random)?_<retr>_k<k>.jsonl
 # The suffix captures which pillars are ON (text, struct, syn, fg, rdk).
 # Optional _random tag indicates the fewshot pool was random instead of structural.
-MCRAG_LABELS = {
+MOLERAG_LABELS = {
     # New canonical conditions (from --no_text --no_synonyms --no_fgs --no_rdkit + fewshot_pool)
     "mcrag_struct":                 "best_fp",         # condition 4: struct-only, structural fewshot
     "mcrag_struct_random":          "random",          # condition 2: struct-only, random fewshot
     # Full / leave-one-out (when text retrieval is also on, etc.)
-    "mcrag_full":                   "MCRAG",
-    "mcrag_text_struct_syn_fg_rdk": "MCRAG",           # equivalent to full
+    "mcrag_full":                   "MolE-RAG",
+    "mcrag_text_struct_syn_fg_rdk": "MolE-RAG",         # equivalent to full
     "mcrag_struct_syn_fg_rdk":      "-text",
     "mcrag_text_syn_fg_rdk":        "-struct",
     "mcrag_text_struct_fg_rdk":     "-syn",
@@ -123,13 +123,13 @@ MCRAG_LABELS = {
 }
 
 TABLE_TO_MODES = {
-    "A": ["smiles", "MCRAG"],
-    "B": ["smiles", "MCRAG"],
+    "A": ["smiles", "MolE-RAG"],
+    "B": ["smiles", "MolE-RAG"],
     "1": ["smiles", "chemrag_smi", "hybrid", "raw_syn"],
     "2": ["pi_none", "pi_syn", "pi_fg", "pi_rdk",
           "pi_syn_fg", "pi_syn_rdk", "pi_fg_rdk", "pi_all"],
-    "3": ["smiles", "chemrag_smi", "MCRAG", "text-only", "text+struct", "hybrid"],
-    "4": ["smiles", "MCRAG", "-text", "-struct", "-syn", "-fg", "-rdk"],
+    "3": ["smiles", "chemrag_smi", "MolE-RAG", "text-only", "text+struct", "hybrid"],
+    "4": ["smiles", "MolE-RAG", "-text", "-struct", "-syn", "-fg", "-rdk"],
     "5": ["smiles", "random", "MolRAG", "best_fp"],
 }
 
@@ -508,17 +508,17 @@ def discover_files(tasks: List[str],
             if not keep(label): continue
             _scan_dir(base / subdir, label, seeds_filter, out)
 
-        # MCRAG full results: label is computed from filename pattern.
+        # MolE-RAG full results: label is computed from filename pattern.
         # We need to scan all files first and then filter by computed label.
-        mcrag_base = base / MCRAG_DIR
-        if mcrag_base.is_dir():
-            # Files directly in mcrag_base (no seed)
-            for p in sorted(mcrag_base.glob("*.jsonl")):
-                label = _label_from_mcrag_filename(p.name)
+        molerag_base = base / MOLERAG_DIR
+        if molerag_base.is_dir():
+            # Files directly in molerag_base (no seed)
+            for p in sorted(molerag_base.glob("*.jsonl")):
+                label = _label_from_molerag_filename(p.name)
                 if keep(label):
                     out.append((p, label, None))
             # seed_N subdirs
-            for sub in sorted(mcrag_base.iterdir()):
+            for sub in sorted(molerag_base.iterdir()):
                 if sub.is_dir():
                     m = SEED_DIR_RE.match(sub.name)
                     if m:
@@ -526,13 +526,13 @@ def discover_files(tasks: List[str],
                         if seeds_filter is not None and seed not in seeds_filter:
                             continue
                         for p in sorted(sub.glob("*.jsonl")):
-                            label = _label_from_mcrag_filename(p.name)
+                            label = _label_from_molerag_filename(p.name)
                             if keep(label):
                                 out.append((p, label, seed))
     return out
 
 
-def _label_from_mcrag_filename(name: str) -> str:
+def _label_from_molerag_filename(name: str) -> str:
     """Compute mode label from an molerag_results filename.
 
     Examples:
@@ -541,14 +541,14 @@ def _label_from_mcrag_filename(name: str) -> str:
       gpt_4o_mini_bbbp_mcrag_struct_random_bm25_k5.jsonl
         -> suffix "struct_random" -> label "random"
       gpt_4o_mini_bbbp_mcrag_full_bm25_k5.jsonl
-        -> suffix "full"          -> label "MCRAG"
+        -> suffix "full"          -> label "MolE-RAG"
     """
     m = re.search(r"_mcrag_(.+?)_(bm25|contriever|specter|e5|rrf)_k", name)
     if not m:
-        return "mcrag_unknown"
+        return "molerag_unknown"
     suffix = m.group(1)
     full_key = f"mcrag_{suffix}"
-    return MCRAG_LABELS.get(full_key, full_key)
+    return MOLERAG_LABELS.get(full_key, full_key)
 
 
 # ===========================================================================
@@ -686,7 +686,7 @@ def _group_by_task_model(results: List[Dict[str, Any]]
 
 
 # ===========================================================================
-# Main Table A — Binary Classification (F1 ± std, smiles vs MCRAG)
+# Main Table A — Binary Classification (ROC-AUC ± std, smiles vs MolE-RAG)
 # ===========================================================================
 def print_main_table_classification(results: List[Dict[str, Any]]):
     lookup = _build_lookup(results, "classification")
@@ -706,7 +706,7 @@ def print_main_table_classification(results: List[Dict[str, Any]]):
     for model in MODEL_ORDER:
         if model not in lookup:
             continue
-        for mode_label, mode_name in [("smiles", "SMILES"), ("MCRAG", "MCRAG")]:
+        for mode_label, mode_name in [("smiles", "SMILES"), ("MolE-RAG", "MolE-RAG")]:
             row = f"{model[:28]:<28} {mode_name:<8}"
             for task in CLASS_TASKS:
                 r = lookup[model][task].get(mode_label)
@@ -717,7 +717,7 @@ def print_main_table_classification(results: List[Dict[str, Any]]):
 
 
 # ===========================================================================
-# Main Table B — Regression (MAE ± std, smiles vs MCRAG)
+# Main Table B — Regression (RMSE ± std, smiles vs MolE-RAG)
 # ===========================================================================
 def print_main_table_regression(results: List[Dict[str, Any]]):
     lookup = _build_lookup(results, "regression")
@@ -737,7 +737,7 @@ def print_main_table_regression(results: List[Dict[str, Any]]):
     for model in MODEL_ORDER:
         if model not in lookup:
             continue
-        for mode_label, mode_name in [("smiles", "SMILES"), ("MCRAG", "MCRAG")]:
+        for mode_label, mode_name in [("smiles", "SMILES"), ("MolE-RAG", "MolE-RAG")]:
             row = f"{model[:28]:<28} {mode_name:<8}"
             for task in REG_TASKS:
                 r = lookup[model][task].get(mode_label)
@@ -770,7 +770,7 @@ def print_main_table_secondary(results: List[Dict[str, Any]]):
     for model in MODEL_ORDER:
         if model not in lookup_cls:
             continue
-        for mode_label, mode_name in [("smiles", "SMILES"), ("MCRAG", "MCRAG")]:
+        for mode_label, mode_name in [("smiles", "SMILES"), ("MolE-RAG", "MolE-RAG")]:
             row = f"{model[:28]:<28} {mode_name:<8}"
             for task in CLASS_TASKS:
                 r = lookup_cls[model][task].get(mode_label)
@@ -796,7 +796,7 @@ def print_main_table_secondary(results: List[Dict[str, Any]]):
     for model in MODEL_ORDER:
         if model not in lookup_reg:
             continue
-        for mode_label, mode_name in [("smiles", "SMILES"), ("MCRAG", "MCRAG")]:
+        for mode_label, mode_name in [("smiles", "SMILES"), ("MolE-RAG", "MolE-RAG")]:
             row = f"{model[:28]:<28} {mode_name:<8}"
             for task in REG_TASKS:
                 r = lookup_reg[model][task].get(mode_label)
@@ -861,14 +861,14 @@ def print_table_2_promptinject(results):
         print(f"{task:<10} {model[:22]:<22} {_fmt(base):>9} {cells} {d:>10}")
 
 
-def print_table_3_mcrag_ladder(results):
+def print_table_3_molerag_ladder(results):
     grouped = _group_by_task_model(results)
     W = 130
     print(f"\n{'='*W}")
     print(f"{'TABLE 3 — MolE-RAG ladder (mean over seeds, vs smiles)':^{W}}")
     print(f"{'='*W}")
     print(f"{'task':<10} {'model':<26} {'smiles':>9} "
-          f"{'text-only':>10} {'text+struct':>12} {'MCRAG':>10} {'Δ MCRAG':>10}")
+          f"{'text-only':>10} {'text+struct':>12} {'MolE-RAG':>10} {'Δ MolE-RAG':>10}")
     print("-" * W)
     for (task, model), modes in sorted(grouped.items()):
         ttype = DATASET_TASK_TYPE.get(task, "classification")
@@ -877,7 +877,7 @@ def print_table_3_mcrag_ladder(results):
             s = _primary_metric(modes.get("chemrag_smi"))
         t  = _primary_metric(modes.get("text-only")) or _primary_metric(modes.get("hybrid"))
         ts = _primary_metric(modes.get("text+struct"))
-        f  = _primary_metric(modes.get("MCRAG"))
+        f  = _primary_metric(modes.get("MolE-RAG"))
         if all(x is None for x in (s, t, ts, f)):
             continue
         print(f"{task:<10} {model[:26]:<26} {_fmt(s):>9} "
@@ -890,12 +890,12 @@ def print_table_4_pillar_contribution(results):
     print(f"\n{'='*W}")
     print(f"{'TABLE 4 — Per-pillar contribution (full minus each pillar)':^{W}}")
     print(f"{'='*W}")
-    print(f"{'task':<10} {'model':<26} {'MCRAG':>10} "
+    print(f"{'task':<10} {'model':<26} {'MolE-RAG':>10} "
           f"{'-text':>10} {'-struct':>10} {'-syn':>10} {'-fg':>10} {'-rdk':>10}")
     print("-" * W)
     for (task, model), modes in sorted(grouped.items()):
         ttype = DATASET_TASK_TYPE.get(task, "classification")
-        full = _primary_metric(modes.get("MCRAG"))
+        full = _primary_metric(modes.get("MolE-RAG"))
         nt   = _primary_metric(modes.get("-text"))
         ns   = _primary_metric(modes.get("-struct"))
         nsy  = _primary_metric(modes.get("-syn"))
@@ -1098,7 +1098,7 @@ def main():
     if "1" in args.tables: print_table_1_retrieval(agg)
     if "5" in args.tables: print_table_5_structure_retrieval(agg)
     if "2" in args.tables: print_table_2_promptinject(agg)
-    if "3" in args.tables: print_table_3_mcrag_ladder(agg)
+    if "3" in args.tables: print_table_3_molerag_ladder(agg)
     if "4" in args.tables: print_table_4_pillar_contribution(agg)
 
     # CSVs

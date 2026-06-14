@@ -469,7 +469,7 @@ def resolve_paths(dataset_name: str, flag_combo: str,
     else:
         test_csv = base / f"{dataset_name}_test.csv"
         out_dir = base / "mol_context_results" / flag_combo
-        print(f"[NO SEED] Using legacy single-split layout")
+        print(f"[NO SEED] Using default single-split layout")
         print(f"  test:    {test_csv}")
 
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -483,7 +483,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dataset", required=True, choices=list(DATASET_CONFIG.keys()))
     ap.add_argument("--seed", type=int, default=None,
-                    help="scaffold split seed (0/1/2). If omitted, uses legacy "
+                    help="scaffold split seed (0/1/2). If omitted, uses default "
                          "single-split layout.")
 
     ap.add_argument("--prompt_synonyms", action="store_true",
@@ -548,7 +548,7 @@ def main():
     print("=" * 100)
     print(f"Mode      : mol_context_only (no retrieval)")
     print(f"Dataset   : {dataset_name}   Task type: {task_type}   "
-          f"Seed: {args.seed if args.seed is not None else '(legacy)'}")
+          f"Seed: {args.seed if args.seed is not None else '(default)'}")
     print(f"Injection : synonyms={args.prompt_synonyms}  "
           f"functional_groups={args.prompt_fgs}  rdkit={args.prompt_rdkit}")
     print(f"Flag combo: {flag_combo}")
