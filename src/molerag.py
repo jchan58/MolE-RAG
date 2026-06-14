@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-molerag.py — the full MCRAG pipeline (with --seed + --fewshot_pool support).
+molerag.py — the full MolE-RAG pipeline (with --seed + --fewshot_pool support).
 
 Combines all three pillars into a single inference run:
   1. Text retrieval     — hybrid BM25 (LLM task keywords + LLM-filtered synonyms)
@@ -51,21 +51,17 @@ from dotenv import load_dotenv
 # ---------------------------------------------------------------------------
 REPO_ROOT     = Path(__file__).resolve().parent.parent  # src/ -> MolE-RAG/
 CHEMRAG_ROOT  = REPO_ROOT / "external" / "ChemRAG"
-TEXTRAG_DIR   = REPO_ROOT / "src"
 ENV_PATH      = REPO_ROOT / ".env"
 
 DEFAULT_CORPUS_PATH       = CHEMRAG_ROOT / "corpus" / "chemrag_full_corpus.jsonl"
 DEFAULT_INDEX_DIR         = CHEMRAG_ROOT / "index"
 DEFAULT_SYNONYM_CACHE     = REPO_ROOT / "caches" / "llm_filtered_synonyms.json"
 
-if str(TEXTRAG_DIR) not in sys.path:
-    sys.path.insert(0, str(TEXTRAG_DIR))
-
-from prompt_blocks import (  # noqa: E402
+from context.prompt_blocks import (  # noqa: E402
     load_syn_cache, build_prompt_injection, availability_check,
     DEFAULT_SYNONYM_CACHE as PB_DEFAULT_SYNONYM_CACHE,
 )
-import chemrag_retrieval as cr  # noqa: E402
+import retrieval.chemrag_retrieval as cr  # noqa: E402
 
 load_dotenv(str(ENV_PATH))
 
@@ -381,7 +377,7 @@ def run_smiles_baseline_for_model(model_name: str, dataset_name: str,
 
 
 # ===========================================================================
-# Prompt construction (full MCRAG)
+# Prompt construction (full MolE-RAG)
 # ===========================================================================
 SYSTEM_PROMPT = cr.SYSTEM_PROMPT
 SYSTEM_PROMPT_STRICT = cr.SYSTEM_PROMPT_STRICT
@@ -505,7 +501,7 @@ def main():
     ap.add_argument("--retry_nulls", dest="retry_nulls", action="store_true", default=True)
     ap.add_argument("--no_retry_nulls", dest="retry_nulls", action="store_false")
     ap.add_argument("--overwrite", action="store_true",
-                    help="overwrite existing MCRAG inference output files")
+                    help="overwrite existing MolE-RAG inference output files")
     ap.add_argument("--overwrite_retrieval", action="store_true")
     ap.add_argument("--retrieval_only", action="store_true")
 
@@ -600,7 +596,7 @@ def main():
         valid_examples = valid_examples[:args.limit]
 
     print("=" * 100)
-    print(f"MCRAG FULL — combined retrieval + prompt injection")
+    print(f"MolE-RAG — combined retrieval + prompt injection")
     print(f"Dataset   : {dataset_name}   Task type: {task_type}   Seed: {args.seed}")
     print(f"Fewshot   : {args.fewshot_pool}")
     print(f"Pillars   : text={use_text}  structure={use_struct}  "
@@ -722,7 +718,7 @@ def main():
             structural_cache[idx] = ""
 
     # =========================================================
-    # Step 4: MCRAG inference — one model at a time
+    # Step 4: MolE-RAG inference — one model at a time
     # =========================================================
     # Tag output filename with pool type so structural/random don't collide
     pool_tag = "" if args.fewshot_pool == "structural" else f"_{args.fewshot_pool}"

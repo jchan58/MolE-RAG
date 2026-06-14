@@ -47,7 +47,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from dotenv import load_dotenv
 
-REPO_ROOT     = Path(__file__).resolve().parent.parent  # src/ -> MolE-RAG/
+REPO_ROOT     = Path(__file__).resolve().parent.parent.parent  # src/subdir/ -> src/ -> MolE-RAG/
 RESCUE_CACHE  = REPO_ROOT / "caches" / "parse_rescue_cache.json"
 MC_EVAL_CSV       = REPO_ROOT / "results" / "mc_eval_long.csv"        # per-(file, seed)
 MC_EVAL_AGG_CSV   = REPO_ROOT / "results" / "mc_eval_aggregated.csv"  # cross-seed mean/std
@@ -694,7 +694,7 @@ def print_main_table_classification(results: List[Dict[str, Any]]):
     W = 28 + 8 + (COL_W + 1) * len(CLASS_TASKS)
 
     print(f"\n{'='*W}")
-    print(f"{'MAIN TABLE A — Classification: ROC AUC ± std  (SMILES vs MCRAG)':^{W}}")
+    print(f"{'MAIN TABLE A — Classification: ROC AUC ± std  (SMILES vs MolE-RAG)':^{W}}")
     print(f"{'='*W}")
 
     hdr = f"{'Model':<28} {'Method':<8}"
@@ -725,7 +725,7 @@ def print_main_table_regression(results: List[Dict[str, Any]]):
     W = 28 + 8 + (COL_W + 1) * len(REG_TASKS)
 
     print(f"\n{'='*W}")
-    print(f"{'MAIN TABLE B — Regression: RMSE ± std  (SMILES vs MCRAG)':^{W}}")
+    print(f"{'MAIN TABLE B — Regression: RMSE ± std  (SMILES vs MolE-RAG)':^{W}}")
     print(f"{'='*W}")
 
     hdr = f"{'Model':<28} {'Method':<8}"
@@ -865,7 +865,7 @@ def print_table_3_mcrag_ladder(results):
     grouped = _group_by_task_model(results)
     W = 130
     print(f"\n{'='*W}")
-    print(f"{'TABLE 3 — MCRAG ladder (mean over seeds, vs smiles)':^{W}}")
+    print(f"{'TABLE 3 — MolE-RAG ladder (mean over seeds, vs smiles)':^{W}}")
     print(f"{'='*W}")
     print(f"{'task':<10} {'model':<26} {'smiles':>9} "
           f"{'text-only':>10} {'text+struct':>12} {'MCRAG':>10} {'Δ MCRAG':>10}")

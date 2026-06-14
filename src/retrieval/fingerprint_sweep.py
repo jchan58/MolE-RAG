@@ -34,9 +34,8 @@ from pathlib import Path
 # ---------------------------------------------------------------------------
 # Local paths (resolved relative to repo root)
 # ---------------------------------------------------------------------------
-REPO_ROOT     = Path(__file__).resolve().parent.parent  # src/ -> MolE-RAG/
-TEXTRAG_DIR   = REPO_ROOT / "src"
-SCRIPT_PATH   = TEXTRAG_DIR / "chemrag_retrieval.py"
+REPO_ROOT     = Path(__file__).resolve().parent.parent.parent  # src/subdir/ -> src/ -> MolE-RAG/
+SCRIPT_PATH   = REPO_ROOT / "src" / "retrieval" / "chemrag_retrieval.py"
 
 ALL_TASKS = ["bbbp", "bace", "clintox", "hiv", "tox21", "toxcast", "sider",
              "esol", "freesolv", "lipo"]

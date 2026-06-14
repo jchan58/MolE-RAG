@@ -35,7 +35,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from dotenv import load_dotenv
 
-REPO_ROOT     = Path(__file__).resolve().parent.parent  # src/ -> MolE-RAG/
+REPO_ROOT     = Path(__file__).resolve().parent.parent.parent  # src/subdir/ -> src/ -> MolE-RAG/
 RESCUE_CACHE  = REPO_ROOT / "caches" / "parse_rescue_cache.json"
 EVAL_LONG_CSV = REPO_ROOT / "results" / "eval_long.csv"
 

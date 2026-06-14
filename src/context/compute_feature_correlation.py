@@ -54,7 +54,7 @@ import numpy as np
 # ---------------------------------------------------------------------------
 # Paths (resolved relative to repo root)
 # ---------------------------------------------------------------------------
-REPO_ROOT     = Path(__file__).resolve().parent.parent  # src/ -> MolE-RAG/
+REPO_ROOT     = Path(__file__).resolve().parent.parent.parent  # src/subdir/ -> src/ -> MolE-RAG/
 FEATURE_CACHE = REPO_ROOT / "caches" / "task_rdkit_features.json"
 
 DATASET_TASK_TYPE = {

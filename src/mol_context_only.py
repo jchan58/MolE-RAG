@@ -52,14 +52,9 @@ from dotenv import load_dotenv
 
 # Path setup (resolved relative to repo root)
 REPO_ROOT     = Path(__file__).resolve().parent.parent  # src/ -> MolE-RAG/
-TEXTRAG_DIR   = REPO_ROOT / "src"
 ENV_PATH      = REPO_ROOT / ".env"
 
-# Make sure prompt_blocks is importable.
-if str(TEXTRAG_DIR) not in sys.path:
-    sys.path.insert(0, str(TEXTRAG_DIR))
-
-from prompt_blocks import (   # noqa: E402
+from context.prompt_blocks import (   # noqa: E402
     load_syn_cache, build_prompt_injection, availability_check,
     DEFAULT_SYNONYM_CACHE,
 )

@@ -32,15 +32,18 @@ MolE-RAG is a training-free framework for LLM-based molecular property predictio
 ```
 MolE-RAG/
 ├── src/                          # Core framework code
-│   ├── molerag.py             # Full MolE-RAG pipeline (text + structure + context)
-│   ├── chemrag_retrieval.py      # Text retrieval with BM25 over ChemRAG corpus
-│   ├── prompt_blocks.py          # Molecular context injection (synonyms, FGs, descriptors)
-│   ├── mol_context_only.py           # Molecular context injection without retrieval
-│   ├── compute_rdkit.py              # RDKit descriptor computation
-│   ├── compute_feature_correlation.py  # Task-adaptive descriptor selection
-│   ├── evaluate.py                   # Multi-configuration evaluation (ROC-AUC, RMSE)
-│   ├── chemrag_evaluate.py           # Single-run evaluation for chemrag_retrieval outputs
-│   └── fingerprint_sweep.py          # Fingerprint sweep for task-adaptive selection
+│   ├── molerag.py                # Full MolE-RAG pipeline entry point (text + structure + context)
+│   ├── mol_context_only.py       # Molecular context injection without retrieval
+│   ├── retrieval/                # Text and structural retrieval
+│   │   ├── chemrag_retrieval.py  # BM25 text retrieval over the ChemRAG corpus
+│   │   └── fingerprint_sweep.py  # Fingerprint sweep for task-adaptive selection
+│   ├── context/                  # Molecular context injection
+│   │   ├── prompt_blocks.py      # Context injection building blocks (synonyms, FGs, descriptors)
+│   │   ├── compute_rdkit.py      # RDKit descriptor computation
+│   │   └── compute_feature_correlation.py  # Task-adaptive descriptor selection
+│   └── evaluation/               # Evaluation scripts
+│       ├── evaluate.py           # Multi-configuration evaluation (ROC-AUC, RMSE)
+│       └── chemrag_evaluate.py   # Single-run evaluation for chemrag_retrieval outputs
 ├── scripts/
 │   ├── baseline/                 # SMILES-only baseline scripts (per task)
 │   └── data_preparation/         # Data split and fewshot pool generation
@@ -138,7 +141,7 @@ pip install -r requirements.txt
 
    ```bash
    # Step 4: Run retrieval for a dataset/seed (caches results, no LLM inference)
-   python src/chemrag_retrieval.py --dataset bbbp --retriever bm25 --use_hybrid \
+   python src/retrieval/chemrag_retrieval.py --dataset bbbp --retriever bm25 --use_hybrid \
        --seed 0 --retrieval_only
    # Repeat for seeds 1 and 2, and for each dataset.
    ```
@@ -189,7 +192,7 @@ python scripts/baseline/bbbp_baseline.py
 ### Evaluation
 
 ```bash
-python src/evaluate.py --tasks bbbp --seeds 0
+python src/evaluation/evaluate.py --tasks bbbp --seeds 0
 ```
 
 ### Regenerating Fewshot Pools
@@ -247,7 +250,7 @@ Find the best fingerprint for your task, then build the structural fewshot pool:
 
 ```bash
 # Sweep fingerprints on the validation set to find the best one
-python src/fingerprint_sweep.py --dataset your_dataset --seed 0
+python src/retrieval/fingerprint_sweep.py --dataset your_dataset --seed 0
 
 # Build fewshot_global_structural_top5.csv using the best fingerprint
 python scripts/data_preparation/rebuild_fewshot_pools.py
@@ -267,7 +270,7 @@ python scripts/data_preparation/build_syn_cache.py          # LLM-filters to pap
 **RDKit descriptors** — Select task-relevant descriptors by correlation with training labels:
 
 ```bash
-python src/compute_feature_correlation.py --dataset your_dataset --seed 0
+python src/context/compute_feature_correlation.py --dataset your_dataset --seed 0
 ```
 
 ### 5. Text Retrieval (BM25 Hybrid Queries)
@@ -277,7 +280,7 @@ python src/compute_feature_correlation.py --dataset your_dataset --seed 0
 **BM25 retrieval** — Requires the ChemRAG corpus and index (see [Text Retrieval Setup](#2-text-retrieval-setup-bm25-over-the-chemrag-corpus) above). Builds a per-dataset cache:
 
 ```bash
-python src/chemrag_retrieval.py --dataset your_dataset --retriever bm25 --use_hybrid \
+python src/retrieval/chemrag_retrieval.py --dataset your_dataset --retriever bm25 --use_hybrid \
     --seed 0 --retrieval_only
 ```
 
@@ -325,7 +328,7 @@ python src/molerag.py --dataset bbbp --models gpt-4o-mini --seed 1
 python src/molerag.py --dataset bbbp --models gpt-4o-mini --seed 2
 
 # 4. Evaluate
-python src/evaluate.py --tasks bbbp --seeds 0 1 2
+python src/evaluation/evaluate.py --tasks bbbp --seeds 0 1 2
 ```
 
 For open-source models (no API key needed, requires GPU):

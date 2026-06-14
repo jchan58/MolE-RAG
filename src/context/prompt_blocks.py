@@ -25,7 +25,7 @@ from typing import Any, Dict, List, Optional, Tuple
 # ---------------------------------------------------------------------------
 # Paths (resolved relative to repo root)
 # ---------------------------------------------------------------------------
-REPO_ROOT = Path(__file__).resolve().parent.parent  # src/ -> MolE-RAG/
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent  # src/subdir/ -> src/ -> MolE-RAG/
 RDKIT_FEATURE_CACHE_PATH = REPO_ROOT / "caches" / "task_rdkit_features.json"
 DEFAULT_SYNONYM_CACHE     = REPO_ROOT / "caches" / "llm_filtered_synonyms.json"
 

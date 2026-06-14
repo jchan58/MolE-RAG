@@ -57,7 +57,7 @@ from dotenv import load_dotenv
 # ---------------------------------------------------------------------------
 # Local paths (resolved relative to repo root)
 # ---------------------------------------------------------------------------
-REPO_ROOT     = Path(__file__).resolve().parent.parent  # src/ -> MolE-RAG/
+REPO_ROOT     = Path(__file__).resolve().parent.parent.parent  # src/subdir/ -> src/ -> MolE-RAG/
 CHEMRAG_ROOT  = REPO_ROOT / "external" / "ChemRAG"
 
 ENV_PATH                  = REPO_ROOT / ".env"
