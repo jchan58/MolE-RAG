@@ -57,13 +57,11 @@ MolE-RAG/
 │   ├── bbbp/
 │   ├── bace/
 │   ├── clintox/
-│   ├── hiv/
 │   ├── tox21/
 │   ├── sider/
 │   ├── esol/
 │   ├── freesolv/
-│   ├── lipo/
-│   └── toxcast/
+│   └── lipo/
 ├── caches/                       # Pre-computed caches
 │   ├── llm_filtered_synonyms.json    # LLM-filtered PubChem synonyms
 │   ├── synonyms_cache.json           # Raw PubChem synonym cache
@@ -71,6 +69,34 @@ MolE-RAG/
 │   └── task_rdkit_features.json      # Task-relevant RDKit descriptors
 ├── requirements.txt
 └── README.md
+```
+
+## Quick Start
+
+Reproduce the full MolE-RAG results (no corpus setup needed — BM25 retrieval is pre-cached):
+
+```bash
+# 1. Clone and install
+git lfs install
+git clone https://github.com/jchan58/MolE-RAG.git
+cd MolE-RAG
+pip install -r requirements.txt
+
+# 2. Add your API key
+echo "OPENAI_API_KEY=sk-..." > .env
+
+# 3. Run MolE-RAG on BBBP with GPT-4o-mini (all 3 seeds)
+python src/molerag.py --dataset bbbp --models gpt-4o-mini --seed 0
+python src/molerag.py --dataset bbbp --models gpt-4o-mini --seed 1
+python src/molerag.py --dataset bbbp --models gpt-4o-mini --seed 2
+
+# 4. Evaluate
+python src/evaluation/evaluate.py --tasks bbbp --seeds 0 1 2
+```
+
+For open-source models (no API key needed, requires GPU):
+```bash
+python src/molerag.py --dataset bbbp --seed 0 --models Qwen/Qwen3-4B-Instruct-2507
 ```
 
 ## Setup
@@ -108,7 +134,8 @@ pip install -r requirements.txt
 
    ```bash
    # Step 1: Install retrieval dependencies
-   pip install pyserini flashrag
+   pip install pyserini
+   pip install git+https://github.com/RUC-NLPIR/FlashRAG.git --no-deps
    ```
 
    ```bash
@@ -205,7 +232,7 @@ python scripts/data_preparation/rebuild_fewshot_pools.py
 
 Add your dataset to **three files** before running anything:
 
-**`src/chemrag_retrieval.py`** — `DATASET_CONFIG` dict (used by retrieval and `molerag.py`):
+**`src/retrieval/chemrag_retrieval.py`** — `DATASET_CONFIG` dict (used by retrieval and `molerag.py`):
 ```python
 DATASET_CONFIG = {
     ...
@@ -221,7 +248,7 @@ def task_description(dataset_name, task_name):
 ```
 For regression tasks, also add a sane output range to `REGRESSION_SANE_RANGE` to filter out garbage predictions.
 
-**`src/evaluate.py`** — `DATASET_TASK_TYPE` dict (used by the evaluation script):
+**`src/evaluation/evaluate.py`** — `DATASET_TASK_TYPE` dict (used by the evaluation script):
 ```python
 DATASET_TASK_TYPE = {
     ...
@@ -229,7 +256,7 @@ DATASET_TASK_TYPE = {
 }
 ```
 
-**`src/compute_feature_correlation.py`** and **`src/compute_rdkit.py`** — each has its own `DATASET_TASK_TYPE` dict; add your dataset to both.
+**`src/context/compute_feature_correlation.py`** and **`src/context/compute_rdkit.py`** — each has its own `DATASET_TASK_TYPE` dict; add your dataset to both.
 
 ### 2. Data Preparation
 
@@ -302,34 +329,6 @@ python src/molerag.py --dataset bbbp --seed 0 --models meta-llama/Llama-3.2-3B-I
 
 # Multiple models in one run
 python src/molerag.py --dataset bbbp --seed 0 --models meta-llama/Llama-3.2-3B-Instruct mistralai/Mistral-7B-Instruct-v0.3
-```
-
-## Quick Start
-
-Reproduce the full MolE-RAG results (no corpus setup needed — BM25 retrieval is pre-cached):
-
-```bash
-# 1. Clone and install
-git lfs install
-git clone https://github.com/jchan58/MolE-RAG.git
-cd MolE-RAG
-pip install -r requirements.txt
-
-# 2. Add your API key
-echo "OPENAI_API_KEY=sk-..." > .env
-
-# 3. Run MolE-RAG on BBBP with GPT-4o-mini (all 3 seeds)
-python src/molerag.py --dataset bbbp --models gpt-4o-mini --seed 0
-python src/molerag.py --dataset bbbp --models gpt-4o-mini --seed 1
-python src/molerag.py --dataset bbbp --models gpt-4o-mini --seed 2
-
-# 4. Evaluate
-python src/evaluation/evaluate.py --tasks bbbp --seeds 0 1 2
-```
-
-For open-source models (no API key needed, requires GPU):
-```bash
-python src/molerag.py --dataset bbbp --seed 0 --models Qwen/Qwen3-4B-Instruct-2507
 ```
 
 ## Data
