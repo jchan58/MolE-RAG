@@ -1,19 +1,31 @@
-# MolE-RAG: Molecular-structure Enhanced Retrieval-Augmented Generation for Chemistry
+<div align="center">
 
-This repository contains code and data for reproducing the experiments in:
+# MolE-RAG: Molecular Structure-Enhanced Retrieval-Augmented Generation for Chemistry
 
-> **MolE-RAG: Molecular-structure Enhanced Retrieval-Augmented Generation for Chemistry**
-> Joey Chan, Wonbin Kweon, Ashley Shin, Niharika Bhattacharjee, Patrick Jiang, Yue Guo, Jiawei Han
-> University of Illinois Urbana-Champaign & University of California, San Diego
-> [[Paper]](https://arxiv.org/abs/2606.05693)
+<p align="center">
+  <a href="https://arxiv.org/abs/2606.05693">
+    <img src="https://img.shields.io/badge/arXiv-2606.05693-b31b1b.svg" alt="arXiv">
+  </a>
+</p>
 
-## Overview
+**Joey Chan, Wonbin Kweon, Ashley Shin, Niharika Bhattacharjee, Patrick Jiang, Yue Guo, Jiawei Han**
 
-MolE-RAG is a training-free framework for LLM-based molecular property prediction that augments each prediction with three complementary sources of inference-time context:
+University of Illinois Urbana-Champaign &amp; University of California, San Diego
 
-1. **Text Retrieval** — BM25-based retrieval from the ChemRAG corpus using hybrid queries (task description + LLM-generated keywords + molecule synonyms)
-2. **Molecular Context** — Compound identifiers, functional group annotations (AccFG), and task-relevant RDKit physicochemical descriptors
-3. **Structure Retrieval** — Top-k structurally similar training molecules retrieved via task-adaptive molecular fingerprints
+</div>
+
+## What is MolE-RAG?
+
+MolE-RAG is a training-free framework for LLM-based molecular property prediction. Large language models struggle to reason over molecular structures because SMILES strings differ fundamentally from natural language. MolE-RAG bridges this gap by augmenting each prediction with three complementary sources of inference-time context — no fine-tuning required.
+
+![MolE-RAG Framework](figures/fig_2.png)
+
+## Key Features
+
+- **No training required**: Inference-time augmentation only — works with any LLM out of the box
+- **Three context sources**: Text retrieval from chemistry literature, molecule-specific context (synonyms, functional groups, RDKit descriptors), and structural retrieval via task-adaptive fingerprints
+- **Strong performance**: Improves ROC-AUC by up to 28 points on classification tasks and reduces regression RMSE by up to 67% over SMILES-only baselines across general-purpose LLMs
+- **Broad model coverage**: Evaluated on Llama, Mistral, Qwen3, ChemDFM, GPT-4o-mini, and GPT-5.4-nano across 9 MoleculeNet benchmarks
 
 ## Repository Structure
 
