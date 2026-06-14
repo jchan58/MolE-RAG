@@ -305,13 +305,55 @@ python src/mcrag_full.py --dataset bbbp --seed 0 --models meta-llama/Llama-3.2-3
 python src/mcrag_full.py --dataset bbbp --seed 0 --models meta-llama/Llama-3.2-3B-Instruct mistralai/Mistral-7B-Instruct-v0.3
 ```
 
+## Quick Start
+
+Reproduce the full MolE-RAG results (no corpus setup needed — BM25 retrieval is pre-cached):
+
+```bash
+# 1. Clone and install
+git lfs install
+git clone https://github.com/jchan58/MolE-RAG.git
+cd MolE-RAG
+pip install -r requirements.txt
+
+# 2. Add your API key
+echo "OPENAI_API_KEY=sk-..." > .env
+
+# 3. Run MolE-RAG on BBBP with GPT-4o-mini (all 3 seeds)
+python src/mcrag_full.py --dataset bbbp --models gpt-4o-mini --seed 0
+python src/mcrag_full.py --dataset bbbp --models gpt-4o-mini --seed 1
+python src/mcrag_full.py --dataset bbbp --models gpt-4o-mini --seed 2
+
+# 4. Evaluate
+python src/evaluate.py --tasks bbbp --seeds 0 1 2
+```
+
+For open-source models (no API key needed, requires GPU):
+```bash
+python src/mcrag_full.py --dataset bbbp --seed 0 --models Qwen/Qwen3-4B-Instruct-2507
+```
+
 ## Data
 
-We evaluate on 8 MoleculeNet benchmarks:
-- **Classification** (ROC-AUC): BBBP, BACE, ClinTox, Tox21, SIDER
-- **Regression** (RMSE): ESOL, FreeSolv, Lipophilicity
+We evaluate on 8 [MoleculeNet](https://moleculenet.org/) benchmarks covering drug discovery-relevant molecular properties. All datasets use scaffold splitting (80/10/10 train/valid/test) across 3 random seeds. Pre-computed splits are included in `data/moleculenet_property_scaffold/`.
 
-All datasets use scaffold splitting (80/10/10) across 3 random seeds.
+### Classification (ROC-AUC ↑)
+
+| Dataset | Molecules | Task | Property |
+|---------|-----------|------|----------|
+| BBBP | 2,039 | Binary | Blood-brain barrier permeability |
+| BACE | 1,513 | Binary | BACE-1 inhibition (beta-secretase, Alzheimer's target) |
+| ClinTox | 1,478 | Binary (2 tasks) | Clinical trial toxicity and FDA approval status |
+| Tox21 | 7,831 | Binary (12 tasks) | Toxicity across 12 biochemical assays |
+| SIDER | 1,427 | Binary (27 tasks) | Drug side effect categories from package inserts |
+
+### Regression (RMSE ↓)
+
+| Dataset | Molecules | Property |
+|---------|-----------|----------|
+| ESOL | 1,128 | Aqueous solubility (log mol/L) |
+| FreeSolv | 642 | Hydration free energy (kcal/mol) |
+| Lipophilicity | 4,200 | Octanol/water distribution coefficient (logD at pH 7.4) |
 
 ## Citation
 
