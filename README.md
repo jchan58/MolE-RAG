@@ -5,6 +5,7 @@ This repository contains code and data for reproducing the experiments in:
 > **MolE-RAG: Molecular-structure Enhanced Retrieval-Augmented Generation for Chemistry**
 > Joey Chan, Wonbin Kweon, Ashley Shin, Niharika Bhattacharjee, Patrick Jiang, Yue Guo, Jiawei Han
 > University of Illinois Urbana-Champaign & University of California, San Diego
+> [[Paper]](https://arxiv.org/abs/2606.05693)
 
 ## Overview
 
