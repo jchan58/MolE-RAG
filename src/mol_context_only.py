@@ -69,6 +69,7 @@ DATASET_CONFIG = {
     "bbbp":     {"task_type": "classification", "multitask": False},
     "bace":     {"task_type": "classification", "multitask": False},
     "clintox":  {"task_type": "classification", "multitask": False},
+    "hiv":      {"task_type": "classification", "multitask": False},
     "tox21":    {"task_type": "classification", "multitask": True},
     "sider":    {"task_type": "classification", "multitask": True},
     "esol":     {"task_type": "regression",     "multitask": False},
@@ -329,6 +330,7 @@ def task_description(dataset_name: str, task_name: str) -> str:
     if dataset_name == "bbbp":     return "whether the molecule has blood-brain barrier permeability"
     if dataset_name == "bace":     return "whether the molecule inhibits BACE-1 / beta-secretase"
     if dataset_name == "clintox":  return "whether the molecule is clinically toxic"
+    if dataset_name == "hiv":      return "whether the molecule is active against HIV or inhibits HIV replication"
     if dataset_name == "tox21":    return f"whether the molecule is active in the Tox21 assay: {task_name}"
     if dataset_name == "sider":    return f"whether the molecule is associated with the SIDER adverse effect category: {task_name}"
     if dataset_name == "esol":     return "the molecule's log aqueous solubility"

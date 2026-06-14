@@ -45,6 +45,7 @@ DATASET_TASK_TYPE = {
     "bbbp":     "classification",
     "bace":     "classification",
     "clintox":  "classification",
+    "hiv":      "classification",
     "tox21":    "classification",
     "sider":    "classification",
     "esol":     "regression",

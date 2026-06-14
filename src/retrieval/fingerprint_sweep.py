@@ -37,7 +37,7 @@ from pathlib import Path
 REPO_ROOT     = Path(__file__).resolve().parent.parent.parent  # src/subdir/ -> src/ -> MolE-RAG/
 SCRIPT_PATH   = REPO_ROOT / "src" / "retrieval" / "chemrag_retrieval.py"
 
-ALL_TASKS = ["bbbp", "bace", "clintox", "tox21", "sider",
+ALL_TASKS = ["bbbp", "bace", "clintox", "hiv", "tox21", "sider",
              "esol", "freesolv", "lipo"]
 
 ALL_MODELS = [
