@@ -62,10 +62,8 @@ DATASET_TASK_TYPE = {
     "bbbp":     "classification",
     "bace":     "classification",
     "clintox":  "classification",
-    "hiv":      "classification",
     "tox21":    "classification",
     "sider":    "classification",
-    "toxcast":  "classification",
     "esol":     "regression",
     "lipo":     "regression",
     "freesolv": "regression",
@@ -143,7 +141,7 @@ MODEL_ORDER = [
     "gpt-5.4-nano",
 ]
 
-CLASS_TASKS = ["bbbp", "bace", "clintox", "hiv", "tox21", "sider", "toxcast"]
+CLASS_TASKS = ["bbbp", "bace", "clintox", "tox21", "sider"]
 REG_TASKS   = ["esol", "lipo", "freesolv"]
 
 SEED_DIR_RE = re.compile(r"^seed_(\d+)$")
