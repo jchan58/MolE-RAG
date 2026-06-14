@@ -304,10 +304,11 @@ All datasets use scaffold splitting (80/10/10) across 3 random seeds.
 ## Citation
 
 ```bibtex
-@inproceedings{chan2025molerag,
-  title={MolE-RAG: Molecular-structure Enhanced Retrieval-Augmented Generation for Chemistry},
-  author={Chan, Joey and Kweon, Wonbin and Shin, Ashley and Bhattacharjee, Niharika and Jiang, Patrick and Guo, Yue and Han, Jiawei},
-  year={2025}
+@article{chan2026mole,
+  title={MolE-RAG: Molecular Structure-Enhanced Retrieval-Augmented Generation for Chemistry},
+  author={Chan, Joey and Kweon, Wonbin and Shin, Ashley and Bhattacharjee, Niharika and Jiang, Pengcheng and Guo, Yue and Han, Jiawei},
+  journal={arXiv preprint arXiv:2606.05693},
+  year={2026}
 }
 ```
 
