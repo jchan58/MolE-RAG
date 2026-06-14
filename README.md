@@ -25,7 +25,7 @@ MolE-RAG is a training-free framework for LLM-based molecular property predictio
 - **No training required**: Inference-time augmentation only — works with any LLM out of the box
 - **Three context sources**: Text retrieval from chemistry literature, molecule-specific context (synonyms, functional groups, RDKit descriptors), and structural retrieval via task-adaptive fingerprints
 - **Strong performance**: Improves ROC-AUC by up to 28 points on classification tasks and reduces regression RMSE by up to 67% over SMILES-only baselines across general-purpose LLMs
-- **Broad model coverage**: Evaluated on Llama, Mistral, Qwen3, ChemDFM, GPT-4o-mini, and GPT-5.4-nano across 9 MoleculeNet benchmarks
+- **Broad model coverage**: Evaluated on Llama, Mistral, Qwen3, ChemDFM, GPT-4o-mini, and GPT-5.4-nano across 8 MoleculeNet benchmarks
 
 ## Repository Structure
 
@@ -159,7 +159,7 @@ python src/mcrag_full.py --dataset bbbp --models gpt-4o-mini --seed 0
 ```
 
 Options:
-- `--dataset`: One of `bbbp`, `bace`, `clintox`, `hiv`, `tox21`, `sider`, `esol`, `freesolv`, `lipo`, `toxcast`
+- `--dataset`: One of `bbbp`, `bace`, `clintox`, `tox21`, `sider`, `esol`, `freesolv`, `lipo`
 - `--models`: Model names (space-separated for multiple)
 - `--seed`: Random seed for scaffold split (0, 1, or 2)
 - `--fewshot_pool`: `structural` (default) or `random`
@@ -307,8 +307,8 @@ python src/mcrag_full.py --dataset bbbp --seed 0 --models meta-llama/Llama-3.2-3
 
 ## Data
 
-We evaluate on 9 MoleculeNet benchmarks:
-- **Classification** (ROC-AUC): BBBP, BACE, ClinTox, HIV, Tox21, SIDER
+We evaluate on 8 MoleculeNet benchmarks:
+- **Classification** (ROC-AUC): BBBP, BACE, ClinTox, Tox21, SIDER
 - **Regression** (RMSE): ESOL, FreeSolv, Lipophilicity
 
 All datasets use scaffold splitting (80/10/10) across 3 random seeds.
