@@ -141,7 +141,7 @@ pip install -r requirements.txt
    export JAVA_HOME=~/java21/jdk-21.0.11+10   # adjust path to match installed version
    export JVM_PATH=$JAVA_HOME/lib/server/libjvm.so
 
-   pip install pyserini faiss-cpu
+   pip install pyserini faiss-cpu langid nltk rank_bm25 rouge bm25s
    pip install git+https://github.com/RUC-NLPIR/FlashRAG.git --no-deps
    ```
 
