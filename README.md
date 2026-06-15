@@ -158,11 +158,12 @@ pip install -r requirements.txt
    ```bash
    # Step 3: Build the Pyserini BM25 index over the chunks directory
    # Make sure JAVA_HOME points to Java 21 (see Step 1).
-   # This creates external/ChemRAG/index/bm25/ which chemrag_retrieval.py expects.
+   # Note: index must be built at external/ChemRAG/index/bm25/bm25/ (the code appends /bm25 to the index_dir).
+   mkdir -p external/ChemRAG/index/bm25
    python -m pyserini.index.lucene \
        --collection JsonCollection \
        --input external/ChemRAG/corpus/chunks \
-       --index external/ChemRAG/index/bm25 \
+       --index external/ChemRAG/index/bm25/bm25 \
        --generator DefaultLuceneDocumentGenerator \
        --threads 8 \
        --storePositions --storeDocvectors --storeRaw
